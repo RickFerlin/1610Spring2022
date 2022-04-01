@@ -91,6 +91,7 @@ public class PlayerController : MonoBehaviour
             playerRb.AddForce(Vector3.left * jumpForce, ForceMode.Impulse);
             isOnRWall = false;
         }
+        
 
         //player movement. Player is restricted from moving in certain directions based on gravity direction.
         if (Physics.gravity.y == -gravForce)
