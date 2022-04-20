@@ -8,6 +8,9 @@ TagManager:
   - Ceiling
   - LWall
   - RWall
+  - EnemyHead
+  - PlayerFoot
+  - Enemy
   layers:
   - Default
   - TransparentFX

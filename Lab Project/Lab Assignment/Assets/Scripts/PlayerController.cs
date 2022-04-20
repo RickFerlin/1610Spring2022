@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
             playerRb.AddForce(Vector3.left * jumpForce, ForceMode.Impulse);
             isOnRWall = false;
         }
-        
+
 
         //player movement. Player is restricted from moving in certain directions based on gravity direction.
         if (Physics.gravity.y == -gravForce)
@@ -109,6 +109,35 @@ public class PlayerController : MonoBehaviour
         else if (Physics.gravity.x == gravForce)
         {
             playerRb.AddForce(Vector3.up * speed * verticalInput);
+        }
+
+        //player rotation. When key is pressed, the player will rotate.
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            Vector3 newRotation = new Vector3(0, 0, -90);
+            transform.eulerAngles = newRotation;
+        } else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            Vector3 newRotation = new Vector3(0, 0, 0);
+            transform.eulerAngles = newRotation;
+        } else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            Vector3 newRotation = new Vector3(0, 0, 90);
+            transform.eulerAngles = newRotation;
+        } else if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            Vector3 newRotation = new Vector3(0, 0, 180);
+            transform.eulerAngles = newRotation;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Enemy"))
+        {
+            Destroy(gameObject);
+            Debug.Log("Game Over");
         }
     }
 }
