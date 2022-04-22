@@ -12,15 +12,15 @@ public class Conditionals : MonoBehaviour
         
         if (fifty > ten)
         {
-            Console.WriteLine("Hello World");
+            Debug.Log("Hello World");
         }
         else if (fifty == ten)
         {
-            Console.WriteLine("Howdy World");
+            Debug.Log("Howdy World");
         }
         else
         {
-            Console.WriteLine("Goodbye");
+            Debug.Log("Goodbye");
         }
 
     }
