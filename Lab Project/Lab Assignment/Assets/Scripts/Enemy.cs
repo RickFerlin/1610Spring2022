@@ -8,13 +8,6 @@ public class Enemy : MonoBehaviour
     public Vector3[] positions;
     private int index;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-      
-    }
-
-    // Update is called once per frame
     void Update()
     
     //Allows enemy to move between set locations determined by the array

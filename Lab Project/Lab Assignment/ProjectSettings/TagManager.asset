@@ -11,6 +11,7 @@ TagManager:
   - EnemyHead
   - PlayerFoot
   - Enemy
+  - Crate
   layers:
   - Default
   - TransparentFX

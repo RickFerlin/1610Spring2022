@@ -6,14 +6,17 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private float jumpForce = 25;
-    private float speed = 10.0f;
+    public float speed = 10.0f;
     private Rigidbody playerRb;
     public float gravForce = 9.81f;
+    public float maxXSpeed;
+    public float maxYSpeed;
 
     public bool isOnGround = true;
     public bool isOnCeiling = true;
     public bool isOnLWall = true;
     public bool isOnRWall = true;
+    private bool isOnCrate = false;
 
     // Start is called before the first frame update
     void Start()
@@ -60,6 +63,12 @@ public class PlayerController : MonoBehaviour
             isOnLWall = false;
             isOnRWall = true;
         }
+
+        //Sets bool to see if player is on crate
+        if (collision.gameObject.CompareTag("Crate"))
+        {
+            isOnCrate = true;
+        }
     }
 
     void MovePlayer()
@@ -71,28 +80,31 @@ public class PlayerController : MonoBehaviour
 
 
         //jump mechanics for each gravitational pull
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
+        if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.y == -gravForce && (isOnGround || isOnCrate))
         {
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
+            isOnCrate = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Space) && isOnCeiling)
+        else if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.y == gravForce && (isOnCeiling || isOnCrate))
         {
             playerRb.AddForce(Vector3.down * jumpForce, ForceMode.Impulse);
             isOnCeiling = false;
+            isOnCrate = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Space) && isOnLWall)
+        else if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.x == -gravForce && (isOnLWall || isOnCrate))
         {
             playerRb.AddForce(Vector3.right * jumpForce, ForceMode.Impulse);
             isOnLWall = false;
+            isOnCrate = false;
         }
-        else if (Input.GetKeyDown(KeyCode.Space) && isOnRWall)
+        else if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.x == gravForce && (isOnRWall || isOnCrate))
         {
             playerRb.AddForce(Vector3.left * jumpForce, ForceMode.Impulse);
             isOnRWall = false;
+            isOnCrate = false;
         }
-
-
+        
         //player movement. Player is restricted from moving in certain directions based on gravity direction.
         if (Physics.gravity.y == -gravForce)
         {
@@ -109,6 +121,17 @@ public class PlayerController : MonoBehaviour
         else if (Physics.gravity.x == gravForce)
         {
             playerRb.AddForce(Vector3.up * speed * verticalInput);
+        }
+
+        //Movement speed cap
+        if (Mathf.Abs(playerRb.velocity.x) > speed)
+        {
+            speedCap();
+        }
+
+        if (Math.Abs(playerRb.velocity.y) > speed)
+        {
+            speedCap();
         }
 
         //player rotation. When key is pressed, the player will rotate.
@@ -130,6 +153,38 @@ public class PlayerController : MonoBehaviour
             Vector3 newRotation = new Vector3(0, 0, 180);
             transform.eulerAngles = newRotation;
         }
+        
+        //Turns player model to face movement direction. Needs specification on
+        //each due to gravitational shift in order to avoid character turning
+        //while jumping.
+        if ((playerRb.velocity.x < 0) && (Physics.gravity.y == -gravForce))
+        {
+           transform.localScale = new Vector3(-1, 1, 1);
+        } else if (playerRb.velocity.x > 0 && (Physics.gravity.y == -gravForce))
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        if ((playerRb.velocity.x < 0) && (Physics.gravity.y == gravForce))
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        } else if (playerRb.velocity.x > 0 && (Physics.gravity.y == gravForce))
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
+        if ((playerRb.velocity.y > 0) && (Physics.gravity.x == -gravForce))
+        {
+           transform.localScale = new Vector3(-1, 1, 1);
+        } else if (playerRb.velocity.y < 0 && (Physics.gravity.x == -gravForce))
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        }
+        if ((playerRb.velocity.y > 0) && (Physics.gravity.x == gravForce))
+        {
+            transform.localScale = new Vector3(1, 1, 1);
+        } else if (playerRb.velocity.y < 0 && (Physics.gravity.x == gravForce))
+        {
+            transform.localScale = new Vector3(-1, 1, 1);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -139,5 +194,14 @@ public class PlayerController : MonoBehaviour
             Destroy(gameObject);
             Debug.Log("Game Over");
         }
+    }
+    
+    //Sets max movement speed so AddForce doesn't accelerate for infinity
+    private void speedCap()
+    {
+        maxXSpeed = Mathf.Min(Mathf.Abs(playerRb.velocity.x), speed) * Mathf.Sign(playerRb.velocity.x);
+        maxYSpeed = Mathf.Min(Mathf.Abs(playerRb.velocity.y), speed) * Mathf.Sign(playerRb.velocity.y);
+
+        playerRb.velocity = new Vector3(maxXSpeed, maxYSpeed, 0);
     }
 }

@@ -5,7 +5,9 @@ using UnityEngine;
  
 public class FixedCamera : MonoBehaviour
 {
-    //Script fixes the camera to the player, while also ensuring that it does not rotate when the player rotates due to gravitational change.
+    //Script fixes the camera to the player, while also ensuring
+    //that it does not rotate when the player rotates due to
+    //gravitational change.
     
     private Quaternion my_rotation;
 

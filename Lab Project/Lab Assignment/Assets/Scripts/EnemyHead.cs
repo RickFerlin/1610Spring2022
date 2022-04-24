@@ -6,7 +6,6 @@ using UnityEngine;
 public class EnemyHead : MonoBehaviour
 {
     // Destroys enemy game object upon collision with player foot
-    
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("PlayerFoot"))

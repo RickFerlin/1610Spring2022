@@ -7,12 +7,6 @@ public class HeadStomp : MonoBehaviour
     //Sets the collision for the player to be able to jump on the enemy's head to defeat them.
     
     private Rigidbody playerRb;
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     private void OnTriggerEnter(Collider collision)
     {
