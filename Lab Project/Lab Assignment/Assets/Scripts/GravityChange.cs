@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,13 @@ using UnityEngine;
 public class GravityChange : MonoBehaviour
 {
     public float gravForce = 9.81f;
-   
+    
+    public void Start()
+    {
+        //Sets initial gravity at down.
+        Physics.gravity = new Vector3(0, -gravForce, 0);
+    }
+
     // Update is called once per frame
     void Update()
     {

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private GameManager gameManager;
+    
     private float jumpForce = 25;
     public float speed = 10.0f;
     private Rigidbody playerRb;
@@ -18,14 +20,21 @@ public class PlayerController : MonoBehaviour
     public bool isOnRWall = true;
     private bool isOnCrate = false;
 
+    public AudioClip jumpSound;
+    public AudioClip deathSound;
+    public AudioClip gravSound;
+    private AudioSource playerAudio;
+
     // Start is called before the first frame update
     void Start()
     {
         //Gets rigidbody and sets initial bool for gravity direction to allow jumping
         playerRb = GetComponent<Rigidbody>();
         isOnGround = true;
+        playerAudio = GetComponent<AudioSource>();
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -80,29 +89,34 @@ public class PlayerController : MonoBehaviour
 
 
         //jump mechanics for each gravitational pull
+        //also plays jump sound
         if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.y == -gravForce && (isOnGround || isOnCrate))
         {
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
             isOnCrate = false;
+            playerAudio.PlayOneShot(jumpSound, 1.0f);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.y == gravForce && (isOnCeiling || isOnCrate))
         {
             playerRb.AddForce(Vector3.down * jumpForce, ForceMode.Impulse);
             isOnCeiling = false;
             isOnCrate = false;
+            playerAudio.PlayOneShot(jumpSound, 1.0f);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.x == -gravForce && (isOnLWall || isOnCrate))
         {
             playerRb.AddForce(Vector3.right * jumpForce, ForceMode.Impulse);
             isOnLWall = false;
             isOnCrate = false;
+            playerAudio.PlayOneShot(jumpSound, 1.0f);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && Physics.gravity.x == gravForce && (isOnRWall || isOnCrate))
         {
             playerRb.AddForce(Vector3.left * jumpForce, ForceMode.Impulse);
             isOnRWall = false;
             isOnCrate = false;
+            playerAudio.PlayOneShot(jumpSound, 1.0f);
         }
         
         //player movement. Player is restricted from moving in certain directions based on gravity direction.
@@ -135,23 +149,27 @@ public class PlayerController : MonoBehaviour
         }
 
         //player rotation. When key is pressed, the player will rotate.
-
+        //Sound effect will also play
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             Vector3 newRotation = new Vector3(0, 0, -90);
             transform.eulerAngles = newRotation;
+            playerAudio.PlayOneShot(gravSound, 1.0f);
         } else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             Vector3 newRotation = new Vector3(0, 0, 0);
             transform.eulerAngles = newRotation;
+            playerAudio.PlayOneShot(gravSound, 1.0f);
         } else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
             Vector3 newRotation = new Vector3(0, 0, 90);
             transform.eulerAngles = newRotation;
+            playerAudio.PlayOneShot(gravSound, 1.0f);
         } else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             Vector3 newRotation = new Vector3(0, 0, 180);
             transform.eulerAngles = newRotation;
+            playerAudio.PlayOneShot(gravSound, 1.0f);
         }
         
         //Turns player model to face movement direction. Needs specification on
@@ -186,13 +204,17 @@ public class PlayerController : MonoBehaviour
             transform.localScale = new Vector3(-1, 1, 1);
         }
     }
-
+    
+    //Game over script.
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Enemy"))
         {
-            Destroy(gameObject);
+            playerAudio.PlayOneShot(deathSound, 1.0f);
+            Time.timeScale = 0;
             Debug.Log("Game Over");
+            gameManager.isGameActive = false;
+            gameManager.gameOverScreen.SetActive(true);
         }
     }
     

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public class EnemyHead : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class EnemyHead : MonoBehaviour
         if (other.gameObject.CompareTag("PlayerFoot"))
         {
             Destroy(transform.parent.gameObject);
+            
         }
     }
 }
